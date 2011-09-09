@@ -1,0 +1,35 @@
+head ->
+  style '''
+    #map_canvas { width: 60%; height: 80%; margin: 5% auto; }
+  '''
+  script src: "/browserify.js"
+  script src: "http://maps.googleapis.com/maps/api/js?sensor=false"
+  coffeescript ->
+    $ = require("jquery-browserify")
+    $ ->
+      cameras = [
+        { name: 'I-275 and I-75 Ohio', latitude: 37.0625, longitude: -95.677068 }
+      ]
+      myOptions =
+        zoom: 10,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      map = new google.maps.Map(document.getElementById("map_canvas"), myOptions)
+      geocoder = new google.maps.Geocoder()
+      geocoder.geocode {address: 'Cincinnati, OH'}, (results, status) ->
+        if (status == google.maps.GeocoderStatus.OK)
+          map.setCenter(results[0].geometry.location)
+          marker = new google.maps.Marker
+            map: map
+            position: results[0].geometry.location
+          for camera in cameras
+            console.log camera
+            geocoder.geocode {address: camera.name}, (results, status) ->
+              if (status == google.maps.GeocoderStatus.OK)
+                marker = new google.maps.Marker
+                  map: map
+                  position: new google.maps.LatLng(camera.latitude, camera.longitude)
+                console.log marker.position
+              else
+                console.log status
+body ->
+  div id: "map_canvas"

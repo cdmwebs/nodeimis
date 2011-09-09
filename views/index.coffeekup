@@ -1,0 +1,15 @@
+head ->
+  script src: "/browserify.js"
+  script src: "https://raw.github.com/apache/couchdb/trunk/share/www/script/jquery.couch.js"
+  coffeescript ->
+    $ = require("jquery-browserify")
+    app = require('./camera.coffee')
+    $ ->
+      cameras = new app.Cameras()
+      cameras.fetch
+        success: -> alert cameras.first().get("item")
+        error: (coll, res) ->
+          console.error coll
+          console.error res
+body ->
+  "hi"
